@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    image: valenrio/todo-app-backend:latest
+    container_name: todo-backend
+    ports:
+      - "5000:5000"
+    restart: always
+
+  frontend:
+    image: valenrio/todo-app-frontend:latest
+    container_name: todo-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+    restart: always
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=60
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=false
+    restart: always
